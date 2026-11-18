@@ -25,6 +25,8 @@ IMAGES = [
     ("gallery-12.jpg", "Three friends smiling in the booth"),
 ]
 
+PRINT_IMAGES = [(f"gallery-print-{i:02d}.jpg", alt) for i, (_, alt) in enumerate(IMAGES, 1)]
+
 NAV = [
     ("about.html", "Experience", "about"),
     ("gallery.html", "Gallery", "gallery"),
@@ -115,7 +117,7 @@ def gallery_grid():
         f'<figure><a href="assets/{name}" data-lightbox data-alt="{esc(alt)}" aria-label="Open photo: {esc(alt)}">'
         f'<img src="assets/{name}" alt="{esc(alt)}" loading="lazy" decoding="async"></a>'
         f'<figcaption>No. {i + 1:02d}</figcaption></figure>'
-        for i, (name, alt) in enumerate(IMAGES)
+        for i, (name, alt) in enumerate(PRINT_IMAGES)
     )
 
 def lightbox():
@@ -240,7 +242,7 @@ gallery = page_hero("THE GALLERY", "The gallery.", "Real people, real nights, an
 <section class="page-section tight">
   <div class="gallery-grid">{gallery_grid()}</div>
   {lightbox()}
-  <p class="note">Photographs from The Strip. More moments on the way.</p>
+  <p class="note">Printed strips from The Strip. More moments on the way.</p>
 </section>
 {cta()}
 """

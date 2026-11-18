@@ -146,8 +146,8 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
 .image-strip img{width:100%;aspect-ratio:3/5;object-fit:cover;display:block;background:var(--placeholder)}
 
 /* Gallery page */
-.gallery-grid{columns:4;column-gap:12px;margin-top:36px}
-.gallery-grid figure{break-inside:avoid;margin:0 0 12px;position:relative;overflow:hidden;background:var(--placeholder)}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:36px}
+.gallery-grid figure{margin:0;position:relative;overflow:hidden;background:var(--placeholder)}
 .gallery-grid img{width:100%;height:auto;display:block;transition:transform .5s ease,filter .5s ease}
 .gallery-grid figure:hover img{transform:scale(1.02);filter:brightness(.96)}
 .gallery-grid figcaption{position:absolute;left:10px;bottom:8px;font-size:10px;letter-spacing:.08em;color:#fff;opacity:0;transition:opacity .2s}
@@ -217,7 +217,7 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
 .mt-40{margin-top:40px}
 
 @media(max-width:1200px){
-  .gallery-grid{columns:3}
+  .gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   nav{gap:26px;font-size:16px}
   .wordmark{font-size:33px}
 }
@@ -262,8 +262,8 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
   .page-hero{padding:45px 22px 26px}
   .page-hero .lede{font-size:17px}
   .page-section{padding:36px 22px 60px}
-  .gallery-grid{columns:2;column-gap:8px}
-  .gallery-grid figure{margin-bottom:8px}
+  .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  
   .image-strip{gap:8px;margin-top:32px}
   footer{padding:28px 22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
   footer nav{display:flex;flex-direction:row;flex-wrap:wrap;gap:12px;border:0;padding:0;margin:0;width:auto}
@@ -274,7 +274,7 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
   .not-found{padding:80px 22px}
 }
 @media(max-width:520px){
-  .gallery-grid{columns:1}
+  .gallery-grid{grid-template-columns:1fr}
   .steps-grid{gap:22px}
 }
 @media(prefers-reduced-motion:reduce){
