@@ -61,11 +61,15 @@ for (let index = 1; index <= 12; index += 1) {
     <rect width="${canvasWidth}" height="${canvasHeight}" filter="url(#grain)" opacity="0.55"/>
   </svg>`;
 
-  const output = await sharp(Buffer.from(poster))
-    .resize({ width: 1000 })
-    .jpeg({ quality: 88 })
-    .toBuffer();
+  const posterBuffer = await sharp(Buffer.from(poster)).jpeg({ quality: 92 }).toBuffer();
 
-  await writeFile(`assets/gallery-print-${pad}.jpg`, output);
-  console.log(`gallery-print-${pad}.jpg`);
+  await writeFile(
+    `assets/gallery-print-${pad}.jpg`,
+    await sharp(posterBuffer).resize({ width: 1000 }).jpeg({ quality: 88 }).toBuffer()
+  );
+  await writeFile(
+    `assets/gallery-print-sm-${pad}.jpg`,
+    await sharp(posterBuffer).resize({ width: 700 }).jpeg({ quality: 82 }).toBuffer()
+  );
+  console.log(`gallery-print-${pad}.jpg + gallery-print-sm-${pad}.jpg`);
 }

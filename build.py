@@ -26,6 +26,7 @@ IMAGES = [
 ]
 
 PRINT_IMAGES = [(f"gallery-print-{i:02d}.jpg", alt) for i, (_, alt) in enumerate(IMAGES, 1)]
+PRINT_IMAGES_SM = [(f"gallery-print-sm-{i:02d}.jpg", alt) for i, (_, alt) in enumerate(IMAGES, 1)]
 
 NAV = [
     ("about.html", "Experience", "about"),
@@ -109,7 +110,7 @@ def layout(slug, title, description, content, active=None, head_extra="", noinde
 def gallery_marquee():
     return "".join(
         f'<div class="portrait"><img src="assets/{name}" alt="{esc(alt)}" loading="{"eager" if i < 3 else "lazy"}" decoding="async"></div>'
-        for i, (name, alt) in enumerate(IMAGES)
+        for i, (name, alt) in enumerate(PRINT_IMAGES_SM)
     )
 
 def gallery_grid():
