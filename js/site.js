@@ -5,15 +5,17 @@
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector("header nav");
   if (navToggle && nav) {
-    navToggle.addEventListener("click", () => {
-      const open = nav.classList.toggle("open");
+    const setOpen = (open) => {
+      nav.classList.toggle("open", open);
       navToggle.setAttribute("aria-expanded", String(open));
-    });
+      navToggle.textContent = open ? "Close" : "Menu";
+    };
+    navToggle.addEventListener("click", () => setOpen(!nav.classList.contains("open")));
     nav.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        nav.classList.remove("open");
-        navToggle.setAttribute("aria-expanded", "false");
-      });
+      link.addEventListener("click", () => setOpen(false));
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
     });
   }
 
@@ -56,7 +58,7 @@
       const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
       step = originals[0].getBoundingClientRect().width + gap;
       cycle = step * originals.length;
-      base = (window.matchMedia("(max-width: 820px)").matches ? 18 : 7) * window.innerWidth / 100;
+      base = (window.matchMedia("(max-width: 900px), (orientation: landscape) and (max-height: 500px)").matches ? 18 : 7) * window.innerWidth / 100;
       offset = progress * cycle;
       render();
     }
