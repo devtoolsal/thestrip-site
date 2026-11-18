@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Build The Strip static site from shared chrome + page content."""
+import os
 from pathlib import Path
+
+STAGING = os.environ.get("STAGING") == "1"
 
 ROOT = Path(__file__).parent
 SITE = "https://www.thestripphotobooth.co.za"
@@ -41,7 +44,7 @@ def layout(slug, title, description, content, active=None, head_extra="", noinde
         f'<a href="{href}"{" aria-current=\"page\"" if active == key else ""}>{esc(label)}{" ↗" if key == "contact" else ""}</a>'
         for href, label, key in NAV
     )
-    robots = '<meta name="robots" content="noindex,follow">' if noindex else '<meta name="robots" content="index,follow">'
+    robots = '<meta name="robots" content="noindex,nofollow">' if noindex or STAGING else '<meta name="robots" content="index,follow">'
     return f"""<!doctype html>
 <html lang="en-ZA">
 <head>
@@ -373,13 +376,14 @@ contact = page_hero("ENQUIRE", "Let’s make it<br>a date.", "Tell us a little a
   <div class="contact-grid">
     <div>
       <form id="enquiry-form" class="form" novalidate>
+        <input type="hidden" name="startedAt" id="startedAt">
         <div class="form-row">
-          <label class="field">Your name<input name="name" autocomplete="name" required placeholder="Name &amp; surname"></label>
-          <label class="field">Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+          <label class="field">Your name<input name="name" autocomplete="name" required placeholder="Name &amp; surname"><span class="field-error" data-error-for="name" aria-live="polite"></span></label>
+          <label class="field">Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"><span class="field-error" data-error-for="email" aria-live="polite"></span></label>
         </div>
         <div class="form-row">
           <label class="field">Phone <span class="muted">(optional)</span><input name="phone" type="tel" autocomplete="tel" placeholder="+27"></label>
-          <label class="field">Event date<input name="date" type="date" required></label>
+          <label class="field">Event date<input name="date" type="date" required><span class="field-error" data-error-for="date" aria-live="polite"></span></label>
         </div>
         <div class="form-row">
           <label class="field">What’s the occasion?
@@ -390,11 +394,13 @@ contact = page_hero("ENQUIRE", "Let’s make it<br>a date.", "Tell us a little a
               <option>Something else</option>
             </select>
           </label>
-          <label class="field">Where’s the party?<input name="location" required placeholder="Venue or town"></label>
+          <label class="field">Where’s the party?<input name="location" required placeholder="Venue or town"><span class="field-error" data-error-for="location" aria-live="polite"></span></label>
         </div>
         <label class="field">Anything else?<textarea name="message" rows="4" placeholder="Tell us what you have in mind…"></textarea></label>
         <div class="honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
         <label class="consent"><input type="checkbox" name="consent" required> I’m happy for The Strip to contact me about this enquiry. See the <a href="privacy.html">privacy policy</a>.</label>
+        <span class="field-error" data-error-for="consent" aria-live="polite"></span>
+        <div id="turnstile-slot" class="turnstile-slot"></div>
         <button class="submit" type="submit">Send enquiry <span>↗</span></button>
         <p class="form-status" id="form-status" aria-live="polite"></p>
       </form>
@@ -572,7 +578,7 @@ sitemap_urls = "\n".join(
     encoding="utf-8"
 )
 (ROOT / "robots.txt").write_text(
-    f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n",
+    ("User-agent: *\nDisallow: /\n" if STAGING else f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n"),
     encoding="utf-8"
 )
 (ROOT / ".nojekyll").write_text("", encoding="utf-8")

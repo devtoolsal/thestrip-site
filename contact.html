@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Enquire — The Strip</title>
 <meta name="description" content="Tell us about your event. We’ll come back with availability and a tailored quote.">
-<meta name="robots" content="index,follow">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://www.thestripphotobooth.co.za/contact.html">
 <meta name="theme-color" content="#F4F3EF">
 <meta property="og:type" content="website">
@@ -38,13 +38,14 @@
   <div class="contact-grid">
     <div>
       <form id="enquiry-form" class="form" novalidate>
+        <input type="hidden" name="startedAt" id="startedAt">
         <div class="form-row">
-          <label class="field">Your name<input name="name" autocomplete="name" required placeholder="Name &amp; surname"></label>
-          <label class="field">Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+          <label class="field">Your name<input name="name" autocomplete="name" required placeholder="Name &amp; surname"><span class="field-error" data-error-for="name" aria-live="polite"></span></label>
+          <label class="field">Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"><span class="field-error" data-error-for="email" aria-live="polite"></span></label>
         </div>
         <div class="form-row">
           <label class="field">Phone <span class="muted">(optional)</span><input name="phone" type="tel" autocomplete="tel" placeholder="+27"></label>
-          <label class="field">Event date<input name="date" type="date" required></label>
+          <label class="field">Event date<input name="date" type="date" required><span class="field-error" data-error-for="date" aria-live="polite"></span></label>
         </div>
         <div class="form-row">
           <label class="field">What’s the occasion?
@@ -55,11 +56,13 @@
               <option>Something else</option>
             </select>
           </label>
-          <label class="field">Where’s the party?<input name="location" required placeholder="Venue or town"></label>
+          <label class="field">Where’s the party?<input name="location" required placeholder="Venue or town"><span class="field-error" data-error-for="location" aria-live="polite"></span></label>
         </div>
         <label class="field">Anything else?<textarea name="message" rows="4" placeholder="Tell us what you have in mind…"></textarea></label>
         <div class="honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
         <label class="consent"><input type="checkbox" name="consent" required> I’m happy for The Strip to contact me about this enquiry. See the <a href="privacy.html">privacy policy</a>.</label>
+        <span class="field-error" data-error-for="consent" aria-live="polite"></span>
+        <div id="turnstile-slot" class="turnstile-slot"></div>
         <button class="submit" type="submit">Send enquiry <span>↗</span></button>
         <p class="form-status" id="form-status" aria-live="polite"></p>
       </form>

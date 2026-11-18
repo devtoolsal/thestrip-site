@@ -144,27 +144,93 @@
 
     const status = document.getElementById("form-status");
     const success = document.getElementById("form-success");
+    const startedAt = document.getElementById("startedAt");
+    if (startedAt) startedAt.value = new Date().toISOString();
+
     const dateInput = form.querySelector('[name="date"]');
     if (dateInput) {
       const today = new Date();
       dateInput.min = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, "0"), String(today.getDate()).padStart(2, "0")].join("-");
     }
 
-    function showError(message) {
-      if (!status) return;
-      status.className = "form-status error";
-      status.innerHTML = message;
+    const turnstileSiteKey = window.THESTRIP_TURNSTILE_SITE_KEY || "";
+    const turnstileSlot = document.getElementById("turnstile-slot");
+    if (turnstileSiteKey && turnstileSlot) {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        if (window.turnstile) window.turnstile.render(turnstileSlot, { sitekey: turnstileSiteKey });
+      };
+      document.head.appendChild(script);
+    }
+
+    const field = (name) => form.querySelector(`[name="${name}"]`);
+    const errorFor = (name) => form.querySelector(`[data-error-for="${name}"]`);
+
+    function setError(name, message) {
+      const input = field(name);
+      const error = errorFor(name);
+      if (input) input.setAttribute("aria-invalid", message ? "true" : "false");
+      if (error) error.textContent = message || "";
+    }
+
+    function clearErrors() {
+      ["name", "email", "date", "location", "consent"].forEach((name) => setError(name, ""));
+      if (status) {
+        status.textContent = "";
+        status.className = "form-status";
+      }
+    }
+
+    ["name", "email", "date", "location", "consent"].forEach((name) => {
+      const input = field(name);
+      if (!input) return;
+      const eventName = input.type === "checkbox" || input.tagName === "SELECT" ? "change" : "input";
+      input.addEventListener(eventName, () => setError(name, ""));
+    });
+
+    function validate() {
+      const errors = [];
+      const name = (field("name")?.value || "").trim();
+      const email = (field("email")?.value || "").trim();
+      const date = field("date")?.value || "";
+      const location = (field("location")?.value || "").trim();
+      const consent = field("consent")?.checked;
+
+      if (name.length < 2) errors.push(["name", "Please tell us your name."]);
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push(["email", "Please enter a valid email address."]);
+      if (!date) {
+        errors.push(["date", "Please choose a date."]);
+      } else {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (new Date(date + "T00:00:00") < today) errors.push(["date", "Please choose a future date."]);
+      }
+      if (location.length < 2) errors.push(["location", "Please tell us where the party is."]);
+      if (!consent) errors.push(["consent", "Please confirm we can contact you."]);
+
+      errors.forEach(([name, message]) => setError(name, message));
+      if (errors.length) {
+        const first = field(errors[0][0]);
+        if (first) first.focus();
+        if (status) {
+          status.textContent = "Please check the highlighted fields.";
+          status.className = "form-status error";
+        }
+        return false;
+      }
+      return true;
     }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const data = new FormData(form);
+      clearErrors();
+      if (!validate()) return;
 
+      const data = new FormData(form);
       if (data.get("website")) return;
-      if (!data.get("consent")) {
-        showError("Please confirm you're happy for us to contact you about this enquiry.");
-        return;
-      }
 
       const payload = {
         name: String(data.get("name") || "").trim(),
@@ -175,6 +241,8 @@
         location: String(data.get("location") || "").trim() || undefined,
         message: String(data.get("message") || "").trim() || undefined,
         consent: true,
+        startedAt: String(data.get("startedAt") || "").trim() || undefined,
+        turnstileToken: turnstileSiteKey && window.turnstile ? window.turnstile.getResponse(turnstileSlot) : undefined,
         website: String(data.get("website") || "").trim() || undefined
       };
 
@@ -200,7 +268,10 @@
       const mailto = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
       if (!API_BASE) {
-        showError(`We couldn't send that automatically. <a href="${mailto}">Email us directly</a>.`);
+        if (status) {
+          status.className = "form-status error";
+          status.innerHTML = `We couldn't send that automatically. <a href="${mailto}">Email us directly</a>.`;
+        }
         return;
       }
 
@@ -212,6 +283,7 @@
         });
         if (!response.ok) {
           const error = await response.json().catch(() => ({}));
+          if (response.status === 429) throw new Error("Too many enquiries from this connection. Please try again shortly.");
           throw new Error(error.message || "Could not send the enquiry");
         }
         form.classList.add("hidden");
@@ -220,7 +292,10 @@
           success.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       } catch (error) {
-        showError(`We couldn't send that automatically. <a href="${mailto}">Email us directly</a> or try again.`);
+        if (status) {
+          status.className = "form-status error";
+          status.innerHTML = `We couldn't send that automatically. <a href="${mailto}">Email us directly</a> or try again.`;
+        }
       }
     });
   })();
