@@ -51,6 +51,12 @@ Currently this points at the staging tunnel. The website booking form falls back
 
 The API lives in `thestrip/apps/api` and is deployed separately. For production, point `THESTRIP_API_BASE` at the production API and update the canonical/sitemap domain.
 
+## Live staging
+
+- Website: https://devtoolsal.github.io/thestrip-site/
+- Admin: https://devtoolsal.github.io/thestrip-site/admin/
+- Repository: https://github.com/devtoolsal/thestrip-site
+
 ## Deploy
 
 This folder is the GitHub Pages document root. Push `main` and enable Pages on the repository. No build step is required for the deployed output; `build.py` and `build-assets.mjs` are source tooling.
