@@ -29,6 +29,26 @@ Static website and operations console for The Strip photobooth. Built with plain
 - Typeface: DM Sans
 - Wordmark: “The Strip”, title case, tight tracking, no dot
 
+## P0 status
+
+Done:
+
+- Inline form validation for name, email, date, location and consent.
+- Consent timestamp and policy version stored with each enquiry.
+- Honeypot, minimum form time and per-IP rate limiting (5 per 15 minutes).
+- Optional Cloudflare Turnstile support; set `THESTRIP_TURNSTILE_SITE_KEY` here and `TURNSTILE_SECRET` in the API.
+- Resend notification + auto-reply code; set `RESEND_API_KEY`, `EMAIL_FROM`, `ENQUIRY_NOTIFY_TO` in the API.
+- Staging is `noindex,nofollow` with `robots.txt` disallowed.
+- Admin is `noindex,nofollow`; admin API now requires `ADMIN_TOKEN` with no default.
+- CORS restricted through `CORS_ORIGINS`.
+
+Pending credentials/content:
+
+- Resend domain verification and API key.
+- Turnstile site key and secret.
+- Production API host and domain cutover.
+- Real packages/pricing, phone/WhatsApp, social links, service area, testimonials, legal entity details and higher-resolution gallery originals.
+
 ## Local preview
 
 ```bash
